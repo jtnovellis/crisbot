@@ -1,21 +1,22 @@
 import { useState } from 'react'
+import { frases } from '@/constants/frases'
 
-interface MotivationProps {}
-export default function Motivation({}: MotivationProps) {
+export default function Motivation() {
   const [text, setText] = useState('')
   const [isLoading, setIsLoading] = useState(false)
 
   async function handleClick() {
+    const altSentence = frases[Math.floor(Math.random() * frases.length)]
     try {
       setIsLoading(true)
       const response = await fetch(
-        'https://crisbot.vercel.app/api/motivation',
+        `${process.env.NEXT_PUBLIC_URL}/api/motivation`,
         {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ prompt: text }),
+          body: JSON.stringify({ text: altSentence }),
         }
       )
 
