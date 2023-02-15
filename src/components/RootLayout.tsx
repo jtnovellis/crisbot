@@ -43,7 +43,7 @@ export function RootLayout({ children }: RootLayoutProps) {
           </Link>
         </nav>
       </header>
-      <main className='container mx-auto mx-w-4xl pt-20 h-full w-full'>
+      <main className='container mx-auto mx-w-xl pt-20 h-full w-full'>
         {children}
       </main>
     </>
