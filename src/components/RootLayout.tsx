@@ -1,11 +1,17 @@
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
+import { ChatForm } from './ChatForm'
 
 interface RootLayoutProps {
   children: React.ReactNode
 }
 export function RootLayout({ children }: RootLayoutProps) {
+  const router = useRouter()
+
+  const isHome = router.pathname === '/'
+
   return (
     <>
       <Head>
@@ -46,6 +52,7 @@ export function RootLayout({ children }: RootLayoutProps) {
       <main className='container mx-auto mx-w-xl pt-20 h-full w-full'>
         {children}
       </main>
+      {isHome && <ChatForm />}
     </>
   )
 }
