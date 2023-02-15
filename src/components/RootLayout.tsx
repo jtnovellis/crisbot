@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import Image from 'next/image'
 import Link from 'next/link'
 
 interface RootLayoutProps {
@@ -17,7 +18,16 @@ export function RootLayout({ children }: RootLayoutProps) {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <header className='fixed flex justify-between items-center w-full px-2 py-4 bg-violet-600'>
-        <h1 className='text-white text-2xl font-extrabold'>CrisBot</h1>
+        <div className='flex items-center gap-3'>
+          <Image
+            src={'/400x400.jpg'}
+            width={50}
+            height={50}
+            alt='crisbot profile'
+            className='rounded-full'
+          />
+          <h1 className='text-white text-2xl font-extrabold'>CrisBot</h1>
+        </div>
         <nav className='flex gap-x-4'>
           <Link
             href='/motivation'
