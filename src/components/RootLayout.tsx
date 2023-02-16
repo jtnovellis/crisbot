@@ -1,3 +1,4 @@
+import { ContextProvider } from '@/context'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -13,7 +14,7 @@ export function RootLayout({ children }: RootLayoutProps) {
   const isHome = router.pathname === '/'
 
   return (
-    <>
+    <ContextProvider>
       <Head>
         <title>CrisBot</title>
         <meta
@@ -53,6 +54,6 @@ export function RootLayout({ children }: RootLayoutProps) {
         {children}
       </main>
       {isHome && <ChatForm />}
-    </>
+    </ContextProvider>
   )
 }

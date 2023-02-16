@@ -1,49 +1,85 @@
+import { useChat } from '@/context'
 import { PaperAirplaneIcon } from '@heroicons/react/24/outline'
-import { FormEvent, useRef } from 'react'
+import { ChangeEvent, FormEvent, useRef, useState } from 'react'
+import { v4 as uuidv4 } from 'uuid'
 
 interface ChatFormProps {}
 export function ChatForm({}: ChatFormProps) {
-  const textRef = useRef<HTMLTextAreaElement>(null)
+  const [text, setText] = useState('')
+  const { setMessages } = useChat()
+  const textAreaRef = useRef<HTMLTextAreaElement>(null)
 
-  const handleSubmit = (e?: FormEvent) => {
+  async function handleSubmit(e?: FormEvent) {
     e?.preventDefault()
-    const value = textRef.current?.value
-    // sendPrompt({ prompt: value })
-    if (value) {
-      textRef.current.value = ''
+    const userMessageId = uuidv4()
+    const iaMessageId = uuidv4()
+
+    setMessages(prev => [
+      ...prev,
+      {
+        id: userMessageId,
+        ia: false,
+        message: text,
+      },
+      {
+        id: iaMessageId,
+        ia: true,
+        message: '',
+      },
+    ])
+
+    try {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_URL}/api/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: text }),
+      })
+      const json = await response.json()
+
+      setMessages(prev =>
+        prev.map(entry => {
+          if (entry.id === iaMessageId) {
+            return {
+              ...entry,
+              message: json.response,
+            }
+          }
+          return entry
+        })
+      )
+    } catch (error) {
+      console.error(error)
     }
+
+    setText('')
   }
 
-  const handleChange = () => {
-    const el = textRef.current
+  const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setText(e.target.value)
+    const el = textAreaRef.current
     if (el) {
+      el.style.height = '0px'
       const scrollHeight = el.scrollHeight
       el.style.height = scrollHeight + 'px'
     }
   }
 
-  function handleKeyDown(e: KeyboardEvent) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      handleSubmit()
-    }
-  }
-
   return (
     <form
-      onKeyDown={w => handleKeyDown}
       onSubmit={handleSubmit}
-      className='absolute bottom-0 w-full flex justify-center items-center py-6 bg-purple-300 px-8'
+      className='fixed bottom-0 w-full flex justify-center items-center py-6 bg-purple-300 px-8'
     >
       <div className='py-3 bg-purple-700 rounded-lg px-3 text-white flex justify-between items-center flex-1 max-w-2xl gap-2'>
         <textarea
+          ref={textAreaRef}
           onChange={handleChange}
-          ref={textRef}
+          value={text}
           className='bg-transparent px-1 w-full outline-none'
           autoFocus
           rows={1}
           tabIndex={0}
-          defaultValue=''
         />
         <button type='submit'>
           <PaperAirplaneIcon className='h-5' />
